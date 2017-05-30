@@ -13,7 +13,11 @@ const storeSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  tags: [String]
+  tags: [String],
+  created: {
+    type: Date,
+    default: Date.now
+  },
 });
 
 storeSchema.pre('save', function(next) {
