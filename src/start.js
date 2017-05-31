@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const path = require('path');
 
 // Make sure we are running node 7.6+
 const [major, minor] = process.versions.node.split('.').map(parseFloat);
@@ -18,8 +19,10 @@ mongoose.connection.on('error', (err) => {
 });
 
 // READY?! Let's go!
-
-require('./models/Store');
+console.log(process.cwd())
+console.log('require Store model')
+require(path.resolve('./models/Store'));
+console.log('Store model required')
 
 // Start our app!
 const app = require('./app');
