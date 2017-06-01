@@ -26,6 +26,7 @@ exports.editStore = async (req, res) => {
 }
 
 exports.updateStore = async (req, res) => {
+  req.body.location.type = 'Point';
   const store = await Store.findOneAndUpdate({ _id: req.params.id }, req.body, {
     new: true, // returns new store instead of old one
     runValidators: true // force model to run required validators
