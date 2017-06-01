@@ -51,6 +51,12 @@ exports.getStores = async (req, res) => {
   res.render('stores', { title: 'Stores', stores });
 }
 
+exports.getStoreBySlug = async (req, res, next) => {
+  const store = await Store.findOne({ slug: req.params.slug });
+  if(!store) return next();
+  res.render('store', { title: store.name, store });
+}
+
 exports.editStore = async (req, res) => {
   const store = await Store.findById(req.params.id);
   res.render('editStore', { title: 'Edit Store', store });
@@ -62,6 +68,6 @@ exports.updateStore = async (req, res) => {
     new: true, // returns new store instead of old one
     runValidators: true // force model to run required validators
   }).exec();
-  req.flash('success', `Successfully updated <strong>${store.name}</strong> <a href="/stores/${store.slug}">View store →</a>`);
+  req.flash('success', `Successfully updated <strong>${store.name}</strong> <a href="/store/${store.slug}">View store →</a>`);
   res.redirect(`/stores/${store.id}/edit`);
 }

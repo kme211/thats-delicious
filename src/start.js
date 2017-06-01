@@ -19,10 +19,7 @@ mongoose.connection.on('error', (err) => {
 });
 
 // READY?! Let's go!
-console.log(process.cwd())
-console.log('require Store model')
 require(path.resolve('./models/Store'));
-console.log('Store model required')
 
 // Start our app!
 const app = require('./app');
