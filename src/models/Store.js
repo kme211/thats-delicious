@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 const slug = require('slugs');
+const xssFilters = require('xss-filters');
 
 const storeSchema = new mongoose.Schema({
   name: {
@@ -45,6 +46,13 @@ const storeSchema = new mongoose.Schema({
 storeSchema.index({
   name: 'text',
   description: 'text'
+});
+
+storeSchema.pre('save', function(next) {
+  this.name = xssFilters.inHTMLData(this.name);
+  this.description = xssFilters.inHTMLData(this.description);
+  this.location.address = xssFilters.inHTMLData(this.location.address);
+  next();
 });
 
 storeSchema.pre('save', async function(next) {
