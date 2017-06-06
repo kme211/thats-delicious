@@ -48,6 +48,8 @@ storeSchema.index({
   description: 'text'
 });
 
+storeSchema.index({ location: '2dsphere' });
+
 storeSchema.pre('save', function(next) {
   this.name = xssFilters.inHTMLData(this.name);
   this.description = xssFilters.inHTMLData(this.description);
