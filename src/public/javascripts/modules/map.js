@@ -37,7 +37,7 @@ function loadPlaces(map, lat = 32.75, lng = -97.34) {
         `;
         infoWindow.setContent(html);
         infoWindow.open(map, this);
-      }))
+      }));
 
       // then zoom the map to fit all the markers
       map.setCenter(bounds.getCenter());
