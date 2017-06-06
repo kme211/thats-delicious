@@ -21,6 +21,7 @@ mongoose.connection.on('error', (err) => {
 // READY?! Let's go!
 require(path.resolve('./models/Store'));
 require(path.resolve('./models/User'));
+require(path.resolve('./models/Review'));
 
 // Start our app!
 const app = require('./app');
