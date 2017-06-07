@@ -80,7 +80,34 @@ storeSchema.statics.getTagsList = function() {
     { $group: { _id: '$tags', count: { $sum: 1 }}},
     { $sort: { count: -1 }}
   ]);
-}
+};
+
+storeSchema.statics.getTopStores = function() {
+  return this.aggregate([
+    // lookup stores and populate their reviews
+    // https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/
+    { $lookup: { from: 'reviews', localField: '_id', foreignField: 'store', as: 'reviews' } },
+    // filter for only items that have 2 or more reviews
+    // reviews.1 -> the 1 refers to the index. same as saying 'where the second item in reviews exists'
+    { $match : { 'reviews.1': { $exists: true }}},
+    // add the average reviews field
+    // In MongoDB, you can use $addField instead of $project which won't remove all the other fields from the doc
+    // https://docs.mongodb.com/manual/reference/operator/aggregation/project/#pipe._S_project
+    { $project: {
+      photo: '$$ROOT.photo', // $$ROOT means the original document
+      name: '$$ROOT.name',
+      slug: '$$ROOT.slug',
+      reviews: '$$ROOT.reviews',
+      averageRating: { $avg: '$reviews.rating' }
+    } },
+    // sort it by our new field, highest reviews first
+    // https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
+    { $sort: { averageRating: -1 } },
+    // limit to at most 10
+    // https://docs.mongodb.com/manual/reference/operator/aggregation/limit/
+    { $limit: 10 }
+  ]);
+};
 
 // find reviews where the stores _id property === reviews store property
 storeSchema.virtual('reviews', {
@@ -88,5 +115,13 @@ storeSchema.virtual('reviews', {
   localField: '_id', // which field on the store? 
   foreignField: 'store' // which field on the review? 
 });
+
+function autopopulate(next) {
+  this.populate('reviews');
+  next();
+}
+
+storeSchema.pre('find', autopopulate);
+storeSchema.pre('findOne', autopopulate);
 
 module.exports = mongoose.model('Store', storeSchema);
